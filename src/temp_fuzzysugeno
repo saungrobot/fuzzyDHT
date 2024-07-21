@@ -1,0 +1,89 @@
+#include <Arduino.h>
+#include <Fuzzy.h>
+
+// Create a Fuzzy object
+Fuzzy *fuzzy = new Fuzzy();
+
+// Fuzzy input sets for Humidity
+FuzzySet *sangatKering = new FuzzySet(0, 0, 10, 20);
+FuzzySet *kering = new FuzzySet(10, 20, 30, 40);
+FuzzySet *sedangKelembaban = new FuzzySet(30, 40, 60, 70);
+FuzzySet *basah = new FuzzySet(60, 70, 80, 90);
+FuzzySet *sangatBasah = new FuzzySet(80, 90, 100, 100);
+
+// Fuzzy input sets for Temperature
+FuzzySet *sangatDingin = new FuzzySet(0, 0, 5, 10);
+FuzzySet *dingin = new FuzzySet(5, 10, 20, 25);
+FuzzySet *normal = new FuzzySet(20, 25, 30, 35);
+FuzzySet *panas = new FuzzySet(30, 35, 40, 45);
+FuzzySet *sangatPanas = new FuzzySet(40, 45, 50, 50);
+
+// Fuzzy output sets for Fan Speed
+FuzzySet *sangatPelan = new FuzzySet(0, 0, 0, 25);
+FuzzySet *pelan = new FuzzySet(0, 25, 25, 50);
+FuzzySet *sedangKecepatan = new FuzzySet(25, 50, 50, 75);
+FuzzySet *cepat = new FuzzySet(50, 75, 75, 100);
+FuzzySet *sangatCepat = new FuzzySet(75, 100, 100, 100);
+
+void setup() {
+  Serial.begin(9600);
+  
+  // Setup Fuzzy Inputs
+  FuzzyInput *kelembaban = new FuzzyInput(1);
+  kelembaban->addFuzzySet(sangatKering);
+  kelembaban->addFuzzySet(kering);
+  kelembaban->addFuzzySet(sedangKelembaban);
+  kelembaban->addFuzzySet(basah);
+  kelembaban->addFuzzySet(sangatBasah);
+  fuzzy->addFuzzyInput(kelembaban);
+  
+  FuzzyInput *suhu = new FuzzyInput(2);
+  suhu->addFuzzySet(sangatDingin);
+  suhu->addFuzzySet(dingin);
+  suhu->addFuzzySet(normal);
+  suhu->addFuzzySet(panas);
+  suhu->addFuzzySet(sangatPanas);
+  fuzzy->addFuzzyInput(suhu);
+  
+  // Setup Fuzzy Output
+  FuzzyOutput *kecepatan = new FuzzyOutput(1);
+  kecepatan->addFuzzySet(sangatPelan);
+  kecepatan->addFuzzySet(pelan);
+  kecepatan->addFuzzySet(sedangKecepatan);
+  kecepatan->addFuzzySet(cepat);
+  kecepatan->addFuzzySet(sangatCepat);
+  fuzzy->addFuzzyOutput(kecepatan);
+  
+  // Define Fuzzy Rules
+  FuzzyRuleAntecedent *ifSangatKeringAndSangatDingin = new FuzzyRuleAntecedent();
+  ifSangatKeringAndSangatDingin->joinWithAND(sangatKering, sangatDingin);
+  FuzzyRuleConsequent *thenSangatPelan = new FuzzyRuleConsequent();
+  thenSangatPelan->addOutput(sangatPelan);
+  FuzzyRule *fuzzyRule1 = new FuzzyRule(1, ifSangatKeringAndSangatDingin, thenSangatPelan);
+  fuzzy->addFuzzyRule(fuzzyRule1);
+  
+  // Add more rules as necessary following the same structure
+  // ...
+}
+
+void loop() {
+  int kelembabanValue = random(0, 101); // Simulated humidity input
+  int suhuValue = random(0, 51); // Simulated temperature input
+
+  Serial.println("\n\n\nInputs:");
+  Serial.print("Kelembaban: ");
+  Serial.println(kelembabanValue);
+  Serial.print("Suhu: ");
+  Serial.println(suhuValue);
+  
+  fuzzy->setInput(1, kelembabanValue);
+  fuzzy->setInput(2, suhuValue);
+  fuzzy->fuzzify();
+  
+  float kecepatanValue = fuzzy->defuzzify(1);
+  
+  Serial.print("Kecepatan Kipas: ");
+  Serial.println(kecepatanValue);
+
+  delay(2000); // Wait 2 seconds before next loop
+}
