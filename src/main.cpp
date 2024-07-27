@@ -7,8 +7,8 @@
 
 LiquidCrystal_I2C lcd(0x27,16,2);  // set the LCD address to 0x27 for a 16 chars and 2 line display
 /* Fill in information from Blynk Device Info here */
-#define BLYNK_TEMPLATE_ID "TMPL69Prhmtje"
-#define BLYNK_TEMPLATE_NAME "IoT"
+#define BLYNK_TEMPLATE_ID "TMPL69Prhmtje" //Ganti dengan template ID Blynk Anda
+#define BLYNK_TEMPLATE_NAME "IoT" //Ganti dengan nama template Blynk Anda
 
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
@@ -131,9 +131,9 @@ void setup() {
 void loop() {
    delay(2000); // Wait 2 seconds before next loop
     // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-  float h = dht.readHumidity();
+  float h = 10;// dht.readHumidity(); //Membaca kelembaban 1-100% [10]
   // Read temperature as Celsius (the default)
-  float t = dht.readTemperature();
+  float t = 20;//ht.readTemperature(); //Membaca suhu 1-50°C
 
 
   // Check if any reads failed and exit early (to try again).
@@ -177,12 +177,12 @@ void loop() {
   // Mengatur kecepatan kipas menggunakan PWM pada pin D8
   analogWrite(D8, pwmValue);
   
-  // Blynk.run(); // Jalankan Blynk
+  Blynk.run(); // Jalankan Blynk
   
   // // Kirim data ke Blynk
-  // Blynk.virtualWrite(V0, kelembabanValue); // Kirim kelembaban ke virtual pin V0
-  // Blynk.virtualWrite(V1, suhuValue); // Kirim suhu ke virtual pin V1
-  // Blynk.virtualWrite(V2, kecepatanValue); // Kirim kecepatan kipas ke virtual pin V2
+  Blynk.virtualWrite(V0, kelembabanValue); // Kirim kelembaban ke virtual pin V0
+  Blynk.virtualWrite(V1, suhuValue); // Kirim suhu ke virtual pin V1
+  Blynk.virtualWrite(V2, kecepatanValue); // Kirim kecepatan kipas ke virtual pin V2
 
   // Tampilkan kelembaban dan suhu di LCD satu baris
   lcd.setCursor(0, 0);
